@@ -22,8 +22,11 @@ export interface Player {
   };
 }
 
+export type Zone = 'gas-station-exterior' | 'gas-station-interior';
+
 export interface GameState {
   currentScreen: 'menu' | 'character-creation' | 'cinematic' | 'exploration' | 'combat';
+  currentZone: Zone;
   player: Player | null;
   isLoading: boolean;
   error: string | null;

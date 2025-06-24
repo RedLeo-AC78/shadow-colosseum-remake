@@ -4,25 +4,20 @@ import { useGame } from '@/contexts/GameContext';
 import Player from './Player';
 import { useGridMovement } from '@/hooks/useGridMovement';
 
-const ExplorationScreen = () => {
-  const { state, setCurrentZone } = useGame();
-  // Position de départ au centre approximatif (ligne 10, colonne 15 sur une grille ~20x30)
-  const [playerPosition, setPlayerPosition] = useState({ row: 10, col: 15 });
+const GasStationInterior = () => {
+  const { setCurrentZone } = useGame();
+  // Position de départ au centre/bas de la zone intérieure
+  const [playerPosition, setPlayerPosition] = useState({ row: 12, col: 12 });
   const [showInteraction, setShowInteraction] = useState(false);
 
   const GRID_SIZE = 32; // Taille de chaque case en pixels
-  const MAP_ROWS = 18; // Hauteur de la carte en cases
-  const MAP_COLS = 25; // Largeur de la carte en cases
+  const MAP_ROWS = 16; // Hauteur de la carte en cases (ajustable selon l'image)
+  const MAP_COLS = 24; // Largeur de la carte en cases (ajustable selon l'image)
 
-  // Zones bloquées (obstacles comme pompes à essence, bâtiments, etc.)
+  // Zones bloquées (meubles, comptoirs, etc.) - À définir selon vos spécifications
   const blockedTiles = new Set([
-    // Pompes à essence (approximativement)
-    '8,10', '8,11', '9,10', '9,11',
-    '8,16', '8,17', '9,16', '9,17',
-    // Bâtiment principal (approximativement)
-    '6,12', '6,13', '6,14', '6,15',
-    '7,12', '7,13', '7,14', '7,15',
-    '8,12', '8,13', '8,14', '8,15',
+    // Exemple de zones bloquées - vous pouvez les ajuster
+    '5,8', '5,9', '5,10', '5,11', // Comptoir du haut
   ]);
 
   const { handleKeyPress } = useGridMovement({
@@ -31,37 +26,17 @@ const ExplorationScreen = () => {
     gridBounds: { rows: MAP_ROWS, cols: MAP_COLS },
     blockedTiles,
     onInteraction: () => {
-      // Vérifier si le joueur est aux coordonnées de transition (6,6) ou (6,7)
-      if ((playerPosition.row === 6 && playerPosition.col === 6) || 
-          (playerPosition.row === 6 && playerPosition.col === 7)) {
-        // Transition vers l'intérieur de la station service
-        setCurrentZone('gas-station-interior');
-        return;
-      }
-      
-      // Vérifier si le joueur est devant la porte (approximativement ligne 8, colonne 13-14)
-      const doorPositions = ['7,13', '7,14', '8,13', '8,14'];
-      const playerKey = `${playerPosition.row},${playerPosition.col}`;
-      const nearDoor = doorPositions.some(doorPos => {
-        const [doorRow, doorCol] = doorPos.split(',').map(Number);
-        const distance = Math.abs(playerPosition.row - doorRow) + Math.abs(playerPosition.col - doorCol);
-        return distance <= 1;
-      });
-      
-      if (nearDoor) {
+      // Vérifier si le joueur est près de la sortie (position d'entrée)
+      if (playerPosition.row >= 14 && playerPosition.col >= 11 && playerPosition.col <= 13) {
+        // Retourner à l'extérieur
+        setCurrentZone('gas-station-exterior');
+      } else {
+        // Autres interactions (PNJ, télévision, etc.)
         setShowInteraction(true);
         setTimeout(() => setShowInteraction(false), 2000);
       }
     }
   });
-
-  // Vérifier automatiquement les transitions lors du déplacement
-  useEffect(() => {
-    if ((playerPosition.row === 6 && playerPosition.col === 6) || 
-        (playerPosition.row === 6 && playerPosition.col === 7)) {
-      setCurrentZone('gas-station-interior');
-    }
-  }, [playerPosition, setCurrentZone]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -76,7 +51,7 @@ const ExplorationScreen = () => {
         style={{
           width: MAP_COLS * GRID_SIZE,
           height: MAP_ROWS * GRID_SIZE,
-          backgroundImage: 'url(/lovable-uploads/47770473-884f-4dae-b810-f32d8fa7d3af.png)',
+          backgroundImage: 'url(/lovable-uploads/8efff867-484c-46b7-b0ee-4c6871422bef.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
@@ -112,14 +87,14 @@ const ExplorationScreen = () => {
       {/* Interface d'interaction */}
       {showInteraction && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-black/80 text-white px-4 py-2 rounded">
-          Appuyez sur ESPACE pour entrer dans la station service
+          Interaction détectée - Appuyez sur ESPACE
         </div>
       )}
       
       {/* Informations de coordonnées - à gauche */}
       {process.env.NODE_ENV === 'development' && (
         <div className="absolute top-4 left-4 bg-black/80 text-white p-2 rounded text-xs">
-          <p>Zone: Station service extérieur</p>
+          <p>Zone: Station service intérieur</p>
           <p>Position: Ligne {playerPosition.row}, Colonne {playerPosition.col}</p>
           <p>Coordonnées pixel: {playerPosition.col * GRID_SIZE}, {playerPosition.row * GRID_SIZE}</p>
         </div>
@@ -128,4 +103,4 @@ const ExplorationScreen = () => {
   );
 };
 
-export default ExplorationScreen;
+export default GasStationInterior;

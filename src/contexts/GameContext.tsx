@@ -1,10 +1,11 @@
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { GameState, Player, Pokemon } from '@/types/game';
+import { GameState, Player, Pokemon, Zone } from '@/types/game';
 
 interface GameContextType {
   state: GameState;
   setCurrentScreen: (screen: GameState['currentScreen']) => void;
+  setCurrentZone: (zone: Zone) => void;
   setPlayer: (player: Player) => void;
   addPokemonToTeam: (pokemon: Pokemon) => void;
   setLoading: (loading: boolean) => void;
@@ -15,6 +16,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 type GameAction = 
   | { type: 'SET_CURRENT_SCREEN'; payload: GameState['currentScreen'] }
+  | { type: 'SET_CURRENT_ZONE'; payload: Zone }
   | { type: 'SET_PLAYER'; payload: Player }
   | { type: 'ADD_POKEMON_TO_TEAM'; payload: Pokemon }
   | { type: 'SET_LOADING'; payload: boolean }
@@ -22,6 +24,7 @@ type GameAction =
 
 const initialState: GameState = {
   currentScreen: 'menu',
+  currentZone: 'gas-station-exterior',
   player: null,
   isLoading: false,
   error: null,
@@ -31,6 +34,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'SET_CURRENT_SCREEN':
       return { ...state, currentScreen: action.payload };
+    case 'SET_CURRENT_ZONE':
+      return { ...state, currentZone: action.payload };
     case 'SET_PLAYER':
       return { ...state, player: action.payload };
     case 'ADD_POKEMON_TO_TEAM':
@@ -59,6 +64,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_CURRENT_SCREEN', payload: screen });
   };
 
+  const setCurrentZone = (zone: Zone) => {
+    dispatch({ type: 'SET_CURRENT_ZONE', payload: zone });
+  };
+
   const setPlayer = (player: Player) => {
     dispatch({ type: 'SET_PLAYER', payload: player });
   };
@@ -79,6 +88,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     <GameContext.Provider value={{
       state,
       setCurrentScreen,
+      setCurrentZone,
       setPlayer,
       addPokemonToTeam,
       setLoading,

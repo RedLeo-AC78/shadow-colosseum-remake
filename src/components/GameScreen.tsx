@@ -6,6 +6,7 @@ import MainMenu from './MainMenu';
 import CharacterCreation from './CharacterCreation';
 import CinematicSlideshow from './CinematicSlideshow';
 import ExplorationScreen from './ExplorationScreen';
+import GasStationInterior from './GasStationInterior';
 
 const GameScreen = () => {
   const { state } = useGame();
@@ -19,6 +20,10 @@ const GameScreen = () => {
       case 'cinematic':
         return <CinematicSlideshow />;
       case 'exploration':
+        // Gérer les différentes zones dans l'exploration
+        if (state.currentZone === 'gas-station-interior') {
+          return <GasStationInterior />;
+        }
         return <ExplorationScreen />;
       case 'combat':
         return (
@@ -40,6 +45,7 @@ const GameScreen = () => {
         {process.env.NODE_ENV === 'development' && (
           <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
             <p>Screen: {state.currentScreen}</p>
+            <p>Zone: {state.currentZone}</p>
             {state.player && (
               <>
                 <p>Player: {state.player.name}</p>
