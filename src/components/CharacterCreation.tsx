@@ -66,7 +66,7 @@ const CharacterCreation = () => {
       <div 
         className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png)',
+          backgroundImage: 'url(/lovable-uploads/98fe95e3-f292-4ee1-a789-9eaa446f0a51.png)',
         }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
@@ -79,7 +79,7 @@ const CharacterCreation = () => {
     <div 
       className="min-h-screen p-8 bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: 'url(/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png)',
+        backgroundImage: 'url(/lovable-uploads/98fe95e3-f292-4ee1-a789-9eaa446f0a51.png)',
       }}
     >
       {/* Overlay sombre pour améliorer la lisibilité */}

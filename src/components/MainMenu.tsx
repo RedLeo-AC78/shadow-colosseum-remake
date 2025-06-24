@@ -22,7 +22,7 @@ const MainMenu = () => {
     <div 
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: 'url(/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png)',
+        backgroundImage: 'url(/lovable-uploads/98fe95e3-f292-4ee1-a789-9eaa446f0a51.png)',
       }}
     >
       {/* Overlay sombre pour améliorer la lisibilité */}
@@ -39,23 +39,6 @@ const MainMenu = () => {
           <VolumeX className="w-6 h-6 text-gray-400" />
         )}
       </button>
-
-      {/* Animated background stars */}
-      <div className="absolute inset-0 z-0">
-        {[...Array(50)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute bg-white rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              width: `${Math.random() * 3 + 1}px`,
-              height: `${Math.random() * 3 + 1}px`,
-              animationDelay: `${Math.random() * 2}s`,
-            }}
-          />
-        ))}
-      </div>
 
       {/* Game Title */}
       <div className="text-center z-10 mb-16">
