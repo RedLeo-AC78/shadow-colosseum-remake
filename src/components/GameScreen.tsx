@@ -5,6 +5,7 @@ import { AudioProvider } from '@/contexts/AudioContext';
 import MainMenu from './MainMenu';
 import CharacterCreation from './CharacterCreation';
 import CinematicSlideshow from './CinematicSlideshow';
+import ExplorationScreen from './ExplorationScreen';
 
 const GameScreen = () => {
   const { state } = useGame();
@@ -18,11 +19,7 @@ const GameScreen = () => {
       case 'cinematic':
         return <CinematicSlideshow />;
       case 'exploration':
-        return (
-          <div className="min-h-screen bg-green-800 flex items-center justify-center">
-            <div className="text-white text-2xl">Mode Exploration à venir...</div>
-          </div>
-        );
+        return <ExplorationScreen />;
       case 'combat':
         return (
           <div className="min-h-screen bg-red-800 flex items-center justify-center">
