@@ -5,16 +5,16 @@ import { useGame } from '@/contexts/GameContext';
 import { ChevronLeft, ChevronRight, Play, Pause, SkipForward } from 'lucide-react';
 
 const cinematicImages = [
-  '/lovable-uploads/3d5e6ffa-479b-4b1e-b687-923197245594.png',
-  '/lovable-uploads/e2e1472b-9167-4c07-ae78-b8e06f3ae187.png',
-  '/lovable-uploads/7a06a5d1-d664-4059-963c-e1efa69a395d.png',
-  '/lovable-uploads/2325bb4a-da7e-47ad-b187-2492fc18e1c6.png',
-  '/lovable-uploads/4dd2bbea-a152-4c68-b887-af58f9d071e0.png',
-  '/lovable-uploads/456fb112-8896-41ad-9d1e-d6402d5a6a50.png',
-  '/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png',
-  '/lovable-uploads/dbb9f264-a939-4a96-aea6-a4e9807a2e39.png',
-  // Ces images représentent les premières 8 de la cinématique
-  // Les 18 autres images viendront s'ajouter ici une fois reçues
+  '/lovable-uploads/17e89d28-b912-4ab9-8d8f-3d09423cb3ec.png', // Cinématique 1
+  '/lovable-uploads/b00a260b-ee1c-49f3-86f1-b6930509807f.png', // Cinématique 2
+  '/lovable-uploads/8ffa368d-27d2-4c5b-9168-659ef0f5c73d.png', // Cinématique 3
+  '/lovable-uploads/09628e56-dbcc-4325-bb59-92dda1a279bb.png', // Cinématique 4
+  '/lovable-uploads/cf204bae-b277-42fb-8f84-4935497c57c1.png', // Cinématique 5
+  '/lovable-uploads/899af90a-c511-4a89-a5c3-5cb302e0e3b0.png', // Cinématique 6
+  '/lovable-uploads/5e2d6d4f-4f0c-460a-bd11-64048a9a6b73.png', // Cinématique 7
+  '/lovable-uploads/57a30905-6d8c-4e89-9a72-1deddd2cfa23.png', // Cinématique 8
+  '/lovable-uploads/ae818686-c115-4b47-b53b-64c7687165fa.png', // Cinématique 9
+  '/lovable-uploads/4752cfe9-9a9e-4dcb-aa64-31c2875c01cf.png', // Cinématique 10
 ];
 
 const CinematicSlideshow = () => {
