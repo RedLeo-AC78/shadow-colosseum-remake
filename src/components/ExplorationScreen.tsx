@@ -60,7 +60,7 @@ const ExplorationScreen = () => {
         style={{
           width: MAP_COLS * GRID_SIZE,
           height: MAP_ROWS * GRID_SIZE,
-          backgroundImage: 'url(/lovable-uploads/dbb9f264-a939-4a96-aea6-a4e9807a2e39.png)',
+          backgroundImage: 'url(/lovable-uploads/47770473-884f-4dae-b810-f32d8fa7d3af.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
@@ -100,11 +100,10 @@ const ExplorationScreen = () => {
         </div>
       )}
       
-      {/* Informations de débogage */}
+      {/* Informations de coordonnées - à gauche */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="absolute top-4 right-4 bg-black/80 text-white p-2 rounded text-xs">
+        <div className="absolute top-4 left-4 bg-black/80 text-white p-2 rounded text-xs">
           <p>Position: Ligne {playerPosition.row}, Colonne {playerPosition.col}</p>
-          <p>Joueur: {state.player?.name}</p>
           <p>Coordonnées pixel: {playerPosition.col * GRID_SIZE}, {playerPosition.row * GRID_SIZE}</p>
         </div>
       )}
