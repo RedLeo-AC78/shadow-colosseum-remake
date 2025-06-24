@@ -2,25 +2,36 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/contexts/GameContext';
+import { Volume, VolumeX } from 'lucide-react';
 
 const MainMenu = () => {
   const { setCurrentScreen } = useGame();
-  const [showPressStart, setShowPressStart] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setShowPressStart(prev => !prev);
-    }, 800);
-
-    return () => clearInterval(interval);
-  }, []);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
 
   const handleStart = () => {
     setCurrentScreen('character-creation');
   };
 
+  const toggleSound = () => {
+    setIsSoundEnabled(!isSoundEnabled);
+    // Ici on pourra plus tard déclencher l'activation du son
+    console.log('Sound toggled:', !isSoundEnabled);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-blue-900 to-black flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Sound Toggle Button */}
+      <button
+        onClick={toggleSound}
+        className="absolute top-8 right-8 z-20 p-3 bg-black/30 rounded-full hover:bg-black/50 transition-all duration-200"
+      >
+        {isSoundEnabled ? (
+          <Volume className="w-6 h-6 text-white" />
+        ) : (
+          <VolumeX className="w-6 h-6 text-gray-400" />
+        )}
+      </button>
+
       {/* Animated background stars */}
       <div className="absolute inset-0">
         {[...Array(50)].map((_, i) => (
@@ -49,16 +60,14 @@ const MainMenu = () => {
         <p className="text-xl text-gray-300 drop-shadow-lg">REMAKE</p>
       </div>
 
-      {/* Press Start Button */}
+      {/* Press Start Button with smooth animation */}
       <div className="z-10">
-        {showPressStart && (
-          <Button
-            onClick={handleStart}
-            className="text-2xl px-8 py-4 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-          >
-            PRESS START
-          </Button>
-        )}
+        <Button
+          onClick={handleStart}
+          className="text-2xl px-8 py-4 bg-transparent border-2 border-yellow-500 text-yellow-500 font-bold rounded-lg transition-all duration-1000 ease-in-out animate-pulse hover:bg-yellow-500 hover:text-black hover:scale-105"
+        >
+          PRESS START
+        </Button>
       </div>
 
       {/* Footer */}
