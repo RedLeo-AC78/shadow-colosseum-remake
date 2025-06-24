@@ -3,6 +3,7 @@ import React from 'react';
 import { useGame } from '@/contexts/GameContext';
 import MainMenu from './MainMenu';
 import CharacterCreation from './CharacterCreation';
+import CinematicSlideshow from './CinematicSlideshow';
 
 const GameScreen = () => {
   const { state } = useGame();
@@ -14,11 +15,7 @@ const GameScreen = () => {
       case 'character-creation':
         return <CharacterCreation />;
       case 'cinematic':
-        return (
-          <div className="min-h-screen bg-black flex items-center justify-center">
-            <div className="text-white text-2xl">Cinématique à venir...</div>
-          </div>
-        );
+        return <CinematicSlideshow />;
       case 'exploration':
         return (
           <div className="min-h-screen bg-green-800 flex items-center justify-center">
@@ -42,7 +39,7 @@ const GameScreen = () => {
       
       {/* Debug info en mode développement */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs">
+        <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
           <p>Screen: {state.currentScreen}</p>
           {state.player && (
             <>

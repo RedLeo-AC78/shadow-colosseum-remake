@@ -19,7 +19,15 @@ const MainMenu = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 via-blue-900 to-black flex flex-col items-center justify-center relative overflow-hidden">
+    <div 
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: 'url(/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png)',
+      }}
+    >
+      {/* Overlay sombre pour améliorer la lisibilité */}
+      <div className="absolute inset-0 bg-black/40"></div>
+
       {/* Sound Toggle Button */}
       <button
         onClick={toggleSound}
@@ -33,7 +41,7 @@ const MainMenu = () => {
       </button>
 
       {/* Animated background stars */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0">
         {[...Array(50)].map((_, i) => (
           <div
             key={i}

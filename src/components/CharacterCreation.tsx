@@ -63,15 +63,29 @@ const CharacterCreation = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-900 to-purple-900 flex items-center justify-center">
-        <div className="text-white text-2xl">Chargement des Pokémon...</div>
+      <div 
+        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png)',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="text-white text-2xl z-10">Chargement des Pokémon...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-900 to-purple-900 p-8">
-      <div className="max-w-4xl mx-auto">
+    <div 
+      className="min-h-screen p-8 bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: 'url(/lovable-uploads/f2c8e220-ceea-45f2-838f-237cb4bbf67d.png)',
+      }}
+    >
+      {/* Overlay sombre pour améliorer la lisibilité */}
+      <div className="absolute inset-0 bg-black/50"></div>
+      
+      <div className="max-w-4xl mx-auto relative z-10">
         <Card className="bg-black/50 border-yellow-400 border-2">
           <CardHeader>
             <CardTitle className="text-3xl text-yellow-400 text-center">
