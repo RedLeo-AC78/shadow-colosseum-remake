@@ -15,6 +15,16 @@ const cinematicImages = [
   '/lovable-uploads/57a30905-6d8c-4e89-9a72-1deddd2cfa23.png', // Cinématique 8
   '/lovable-uploads/ae818686-c115-4b47-b53b-64c7687165fa.png', // Cinématique 9
   '/lovable-uploads/4752cfe9-9a9e-4dcb-aa64-31c2875c01cf.png', // Cinématique 10
+  '/lovable-uploads/895ea73b-fbb0-4439-b712-08ebb079e569.png', // Cinématique 11
+  '/lovable-uploads/841dcd74-f788-4278-857f-bb81ff5b5cfc.png', // Cinématique 12
+  '/lovable-uploads/2dc0d3fd-4470-4ba6-a1af-978ae3f14dac.png', // Cinématique 13
+  '/lovable-uploads/f68f52ba-474d-4cf6-ac1a-32c06bea46e4.png', // Cinématique 14
+  '/lovable-uploads/0fc7f8cb-65af-4c5e-a581-eaae09e596cb.png', // Cinématique 15
+  '/lovable-uploads/e3fe4bbd-8c14-4348-832b-a390ed42ce5a.png', // Cinématique 16
+  '/lovable-uploads/a123839b-0c51-4b33-b78c-999c68ea6f47.png', // Cinématique 17
+  '/lovable-uploads/8970f53b-a03c-4a9a-9c2b-f48e8c1ff2c3.png', // Cinématique 18
+  '/lovable-uploads/4bafecb4-1e2f-4704-b88b-ce649e89e1a0.png', // Cinématique 19
+  '/lovable-uploads/b6b86646-30b5-408d-83f1-11edd55bf33f.png', // Cinématique 20
 ];
 
 const CinematicSlideshow = () => {
