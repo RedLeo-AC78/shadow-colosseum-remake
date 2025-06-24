@@ -1,16 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGame } from '@/contexts/GameContext';
+import { useAudio } from '@/contexts/AudioContext';
 import { fetchPokemonList, fetchPokemon } from '@/services/pokeapi';
 import { Pokemon } from '@/types/game';
 import PokemonSelector from './PokemonSelector';
 
 const CharacterCreation = () => {
   const { setCurrentScreen, setPlayer, state } = useGame();
+  const { playMainTitle } = useAudio(); // La musique continue du menu
   const [playerName, setPlayerName] = useState('');
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon[]>([]);
   const [pokemonList, setPokemonList] = useState<Array<{ id: number; name: string }>>([]);
@@ -18,7 +19,9 @@ const CharacterCreation = () => {
 
   useEffect(() => {
     loadPokemonList();
-  }, []);
+    // S'assurer que la musique continue (au cas où)
+    playMainTitle();
+  }, [playMainTitle]);
 
   const loadPokemonList = async () => {
     try {

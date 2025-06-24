@@ -1,7 +1,7 @@
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/contexts/GameContext';
+import { useAudio } from '@/contexts/AudioContext';
 import { ChevronLeft, ChevronRight, Play, Pause, SkipForward, Volume2, VolumeX } from 'lucide-react';
 
 const cinematicImages = [
@@ -36,50 +36,41 @@ const cinematicImages = [
 
 const CinematicSlideshow = () => {
   const { setCurrentScreen } = useGame();
+  const { playIntro, stopAllMusic, toggleMute, isMuted } = useAudio();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Auto-play effect
+  // Durée totale : 64 secondes (1 minute et 4 secondes)
+  // 27 images : 64000ms / 27 ≈ 2370ms par image
+  const SLIDE_DURATION = 2370;
+  const TOTAL_DURATION = 64000; // 1 minute et 4 secondes en millisecondes
+
+  useEffect(() => {
+    // Démarrer la musique d'intro
+    playIntro();
+
+    // Timer pour passer automatiquement à l'exploration après 64 secondes
+    const totalTimer = setTimeout(() => {
+      setCurrentScreen('exploration');
+    }, TOTAL_DURATION);
+
+    return () => {
+      clearTimeout(totalTimer);
+      stopAllMusic(); // Arrêter toute musique en quittant la cinématique
+    };
+  }, [playIntro, stopAllMusic, setCurrentScreen]);
+
+  // Auto-play effect avec timing précis
   useEffect(() => {
     if (!isAutoPlay) return;
 
     const interval = setInterval(() => {
       nextSlide();
-    }, 4000); // Change slide every 4 seconds
+    }, SLIDE_DURATION);
 
     return () => clearInterval(interval);
   }, [currentSlide, isAutoPlay]);
-
-  // Audio management
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.volume = 0.7; // Volume par défaut à 70%
-      audio.loop = true; // Boucle la musique
-      
-      // Démarrer la musique automatiquement
-      const playAudio = async () => {
-        try {
-          await audio.play();
-        } catch (error) {
-          console.log('Autoplay bloqué par le navigateur:', error);
-        }
-      };
-      
-      playAudio();
-    }
-
-    // Cleanup: arrêter la musique quand le composant se démonte
-    return () => {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
-  }, []);
 
   const nextSlide = () => {
     if (isTransitioning) return;
@@ -114,10 +105,7 @@ const CinematicSlideshow = () => {
   };
 
   const skipCinematic = () => {
-    // Arrêter la musique
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
+    stopAllMusic();
     setCurrentScreen('exploration');
   };
 
@@ -125,27 +113,8 @@ const CinematicSlideshow = () => {
     setIsAutoPlay(!isAutoPlay);
   };
 
-  const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
-      {/* Audio Element */}
-      <audio
-        ref={audioRef}
-        preload="auto"
-        className="hidden"
-      >
-        <source src="/audio/cinematic-music.mp3" type="audio/mpeg" />
-        <source src="/audio/cinematic-music.ogg" type="audio/ogg" />
-        <source src="/audio/cinematic-music.wav" type="audio/wav" />
-        Votre navigateur ne supporte pas l'élément audio.
-      </audio>
-
       {/* Main Image Display */}
       <div className="flex-1 relative">
         <img

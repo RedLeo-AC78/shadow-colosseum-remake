@@ -2,20 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/contexts/GameContext';
+import { useAudio } from '@/contexts/AudioContext';
 import { Volume, VolumeX } from 'lucide-react';
 
 const MainMenu = () => {
   const { setCurrentScreen } = useGame();
-  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+  const { playMainTitle, toggleMute, isMuted } = useAudio();
+
+  useEffect(() => {
+    // Démarrer la musique du menu principal
+    playMainTitle();
+  }, [playMainTitle]);
 
   const handleStart = () => {
+    // Pas besoin d'arrêter la musique, elle continue pour la création de personnage
     setCurrentScreen('character-creation');
-  };
-
-  const toggleSound = () => {
-    setIsSoundEnabled(!isSoundEnabled);
-    // Ici on pourra plus tard déclencher l'activation du son
-    console.log('Sound toggled:', !isSoundEnabled);
   };
 
   return (
@@ -30,10 +31,10 @@ const MainMenu = () => {
 
       {/* Sound Toggle Button */}
       <button
-        onClick={toggleSound}
+        onClick={toggleMute}
         className="absolute top-8 right-8 z-20 p-3 bg-black/30 rounded-full hover:bg-black/50 transition-all duration-200"
       >
-        {isSoundEnabled ? (
+        {!isMuted ? (
           <Volume className="w-6 h-6 text-white" />
         ) : (
           <VolumeX className="w-6 h-6 text-gray-400" />
