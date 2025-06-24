@@ -2,21 +2,23 @@
 import React from 'react';
 
 interface PlayerProps {
-  position: { x: number; y: number };
+  position: { row: number; col: number };
+  gridSize: number;
 }
 
-const Player = ({ position }: PlayerProps) => {
+const Player = ({ position, gridSize }: PlayerProps) => {
   return (
     <div
-      className="absolute z-20 transition-all duration-200"
+      className="absolute z-20 transition-all duration-200 flex items-center justify-center"
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        transform: 'translate(-50%, -50%)'
+        left: position.col * gridSize,
+        top: position.row * gridSize,
+        width: gridSize,
+        height: gridSize,
       }}
     >
-      {/* Placeholder du joueur - Un cercle coloré pour l'instant */}
-      <div className="w-8 h-8 bg-blue-500 rounded-full border-2 border-white shadow-lg">
+      {/* Placeholder du joueur - Un cercle coloré centré dans la case */}
+      <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg">
         <div className="w-full h-full bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
       </div>
     </div>
