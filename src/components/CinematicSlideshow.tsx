@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/contexts/GameContext';
@@ -25,6 +24,13 @@ const cinematicImages = [
   '/lovable-uploads/8970f53b-a03c-4a9a-9c2b-f48e8c1ff2c3.png', // Cinématique 18
   '/lovable-uploads/4bafecb4-1e2f-4704-b88b-ce649e89e1a0.png', // Cinématique 19
   '/lovable-uploads/b6b86646-30b5-408d-83f1-11edd55bf33f.png', // Cinématique 20
+  '/lovable-uploads/ce5aa212-797b-4c3c-bd0d-36aa43b5140f.png', // Cinématique 21
+  '/lovable-uploads/dc9057fd-8417-49f9-ae88-83c852c65521.png', // Cinématique 22
+  '/lovable-uploads/e78aa8db-29a2-444f-88a2-becbdbc8496a.png', // Cinématique 23
+  '/lovable-uploads/ccf998e0-cf65-49d1-8742-9916acc7f30a.png', // Cinématique 24
+  '/lovable-uploads/9ec66c9d-35ea-406e-9ffe-27046277f542.png', // Cinématique 25
+  '/lovable-uploads/66557c3c-538d-4011-99f4-66ad58a80412.png', // Cinématique 26
+  '/lovable-uploads/3f473230-a1df-42b1-81fc-22ebecd23ee6.png', // Cinématique 27
 ];
 
 const CinematicSlideshow = () => {
