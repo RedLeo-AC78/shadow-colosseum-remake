@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/contexts/GameContext';
-import { ChevronLeft, ChevronRight, Play, Pause, SkipForward } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Pause, SkipForward, Volume2, VolumeX } from 'lucide-react';
 
 const cinematicImages = [
   '/lovable-uploads/17e89d28-b912-4ab9-8d8f-3d09423cb3ec.png', // Cinématique 1
@@ -38,6 +39,8 @@ const CinematicSlideshow = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   // Auto-play effect
   useEffect(() => {
@@ -49,6 +52,34 @@ const CinematicSlideshow = () => {
 
     return () => clearInterval(interval);
   }, [currentSlide, isAutoPlay]);
+
+  // Audio management
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.volume = 0.7; // Volume par défaut à 70%
+      audio.loop = true; // Boucle la musique
+      
+      // Démarrer la musique automatiquement
+      const playAudio = async () => {
+        try {
+          await audio.play();
+        } catch (error) {
+          console.log('Autoplay bloqué par le navigateur:', error);
+        }
+      };
+      
+      playAudio();
+    }
+
+    // Cleanup: arrêter la musique quand le composant se démonte
+    return () => {
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    };
+  }, []);
 
   const nextSlide = () => {
     if (isTransitioning) return;
@@ -83,6 +114,10 @@ const CinematicSlideshow = () => {
   };
 
   const skipCinematic = () => {
+    // Arrêter la musique
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     setCurrentScreen('exploration');
   };
 
@@ -90,8 +125,27 @@ const CinematicSlideshow = () => {
     setIsAutoPlay(!isAutoPlay);
   };
 
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
+      {/* Audio Element */}
+      <audio
+        ref={audioRef}
+        preload="auto"
+        className="hidden"
+      >
+        <source src="/audio/cinematic-music.mp3" type="audio/mpeg" />
+        <source src="/audio/cinematic-music.ogg" type="audio/ogg" />
+        <source src="/audio/cinematic-music.wav" type="audio/wav" />
+        Votre navigateur ne supporte pas l'élément audio.
+      </audio>
+
       {/* Main Image Display */}
       <div className="flex-1 relative">
         <img
@@ -148,6 +202,15 @@ const CinematicSlideshow = () => {
               className="bg-black/50 border-white/30 text-white hover:bg-white/10"
             >
               <ChevronRight className="w-4 h-4" />
+            </Button>
+
+            <Button
+              onClick={toggleMute}
+              variant="outline"
+              size="sm"
+              className="bg-black/50 border-white/30 text-white hover:bg-white/10"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </Button>
           </div>
 
