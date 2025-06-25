@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { Pokemon, PokemonMove } from '@/types/game';
@@ -67,7 +68,7 @@ const CombatScreen = () => {
     return false;
   };
 
-  const switchPlayerPokemon = (pokemonIndex: number) => {
+  const switchPlayerPokemon = (pokemonIndex: number, isForced: boolean = false) => {
     if (pokemonIndex >= playerTeam.length) return false;
     
     const selectedPokemon = playerTeam[pokemonIndex];
@@ -102,15 +103,18 @@ const CombatScreen = () => {
     setBattleLog(prev => [...prev, `Vous envoyez ${nextPokemon.name} !`]);
     setShowPokemonSelection(false);
     
-    // Le tour du joueur se termine après le changement
-    setIsPlayerTurn(false);
-    
-    // L'adversaire attaque après le changement
-    setTimeout(() => {
-      if (opponentPokemon) {
-        opponentTurn(opponentPokemon);
-      }
-    }, 1500);
+    // Si c'est un changement forcé (Pokémon K.O.), le joueur garde son tour
+    if (isForced) {
+      setIsPlayerTurn(true);
+    } else {
+      // Changement volontaire, le tour passe à l'adversaire
+      setIsPlayerTurn(false);
+      setTimeout(() => {
+        if (opponentPokemon) {
+          opponentTurn(opponentPokemon);
+        }
+      }, 1500);
+    }
     
     return true;
   };
@@ -189,6 +193,7 @@ const CombatScreen = () => {
       if (availablePokemon.length > 0) {
         setBattleLog(prev => [...prev, 'Choisissez votre prochain Pokémon !']);
         setShowPokemonSelection(true);
+        // Le joueur garde son tour car c'est un changement forcé
         setIsPlayerTurn(true);
       } else {
         setTimeout(() => {
@@ -315,7 +320,7 @@ const CombatScreen = () => {
                 return (
                   <Button
                     key={index}
-                    onClick={() => switchPlayerPokemon(index)}
+                    onClick={() => switchPlayerPokemon(index, true)} // true = changement forcé
                     className="p-2 text-sm"
                   >
                     {pokemon.name} (PV: {pokemon.stats.hp}/{pokemon.stats.maxHp})
