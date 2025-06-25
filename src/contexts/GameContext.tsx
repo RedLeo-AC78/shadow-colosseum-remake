@@ -1,32 +1,30 @@
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { GameState, Player, Pokemon, Zone, DialogueState, GameFlags } from '@/types/game';
+import { GameState, Player, Zone, DialogueState, GameFlags } from '../types/game';
 
 interface GameContextType {
   state: GameState;
   setCurrentScreen: (screen: GameState['currentScreen']) => void;
   setCurrentZone: (zone: Zone) => void;
   setPlayer: (player: Player) => void;
-  addPokemonToTeam: (pokemon: Pokemon) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
   setDialogue: (dialogue: DialogueState) => void;
   closeDialogue: () => void;
   updateFlag: (flag: keyof GameFlags, value: boolean) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-type GameAction = 
-  | { type: 'SET_CURRENT_SCREEN'; payload: GameState['currentScreen'] }
-  | { type: 'SET_CURRENT_ZONE'; payload: Zone }
+type GameAction =
+  | { type: 'SET_SCREEN'; payload: GameState['currentScreen'] }
+  | { type: 'SET_ZONE'; payload: Zone }
   | { type: 'SET_PLAYER'; payload: Player }
-  | { type: 'ADD_POKEMON_TO_TEAM'; payload: Pokemon }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_DIALOGUE'; payload: DialogueState }
   | { type: 'CLOSE_DIALOGUE' }
-  | { type: 'UPDATE_FLAG'; payload: { flag: keyof GameFlags; value: boolean } };
+  | { type: 'UPDATE_FLAG'; payload: { flag: keyof GameFlags; value: boolean } }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null };
 
 const initialState: GameState = {
   currentScreen: 'menu',
@@ -43,46 +41,30 @@ const initialState: GameState = {
     gameCompleted: false
   },
   isLoading: false,
-  error: null,
+  error: null
 };
 
 function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
-    case 'SET_CURRENT_SCREEN':
+    case 'SET_SCREEN':
       return { ...state, currentScreen: action.payload };
-    case 'SET_CURRENT_ZONE':
+    case 'SET_ZONE':
       return { ...state, currentZone: action.payload };
     case 'SET_PLAYER':
       return { ...state, player: action.payload };
-    case 'ADD_POKEMON_TO_TEAM':
-      if (!state.player) return state;
-      if (state.player.team.length >= 2) return state; // Max 2 Pokémon
+    case 'SET_DIALOGUE':
+      return { ...state, dialogue: action.payload };
+    case 'CLOSE_DIALOGUE':
+      return { ...state, dialogue: { ...state.dialogue, isActive: false } };
+    case 'UPDATE_FLAG':
       return {
         ...state,
-        player: {
-          ...state.player,
-          team: [...state.player.team, action.payload]
-        }
+        flags: { ...state.flags, [action.payload.flag]: action.payload.value }
       };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
-    case 'SET_DIALOGUE':
-      return { ...state, dialogue: action.payload };
-    case 'CLOSE_DIALOGUE':
-      return { 
-        ...state, 
-        dialogue: { ...state.dialogue, isActive: false }
-      };
-    case 'UPDATE_FLAG':
-      return {
-        ...state,
-        flags: {
-          ...state.flags,
-          [action.payload.flag]: action.payload.value
-        }
-      };
     default:
       return state;
   }
@@ -91,55 +73,20 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialState);
 
-  const setCurrentScreen = (screen: GameState['currentScreen']) => {
-    dispatch({ type: 'SET_CURRENT_SCREEN', payload: screen });
-  };
-
-  const setCurrentZone = (zone: Zone) => {
-    dispatch({ type: 'SET_CURRENT_ZONE', payload: zone });
-  };
-
-  const setPlayer = (player: Player) => {
-    dispatch({ type: 'SET_PLAYER', payload: player });
-  };
-
-  const addPokemonToTeam = (pokemon: Pokemon) => {
-    dispatch({ type: 'ADD_POKEMON_TO_TEAM', payload: pokemon });
-  };
-
-  const setLoading = (loading: boolean) => {
-    dispatch({ type: 'SET_LOADING', payload: loading });
-  };
-
-  const setError = (error: string | null) => {
-    dispatch({ type: 'SET_ERROR', payload: error });
-  };
-
-  const setDialogue = (dialogue: DialogueState) => {
-    dispatch({ type: 'SET_DIALOGUE', payload: dialogue });
-  };
-
-  const closeDialogue = () => {
-    dispatch({ type: 'CLOSE_DIALOGUE' });
-  };
-
-  const updateFlag = (flag: keyof GameFlags, value: boolean) => {
-    dispatch({ type: 'UPDATE_FLAG', payload: { flag, value } });
+  const contextValue: GameContextType = {
+    state,
+    setCurrentScreen: (screen) => dispatch({ type: 'SET_SCREEN', payload: screen }),
+    setCurrentZone: (zone) => dispatch({ type: 'SET_ZONE', payload: zone }),
+    setPlayer: (player) => dispatch({ type: 'SET_PLAYER', payload: player }),
+    setDialogue: (dialogue) => dispatch({ type: 'SET_DIALOGUE', payload: dialogue }),
+    closeDialogue: () => dispatch({ type: 'CLOSE_DIALOGUE' }),
+    updateFlag: (flag, value) => dispatch({ type: 'UPDATE_FLAG', payload: { flag, value } }),
+    setLoading: (loading) => dispatch({ type: 'SET_LOADING', payload: loading }),
+    setError: (error) => dispatch({ type: 'SET_ERROR', payload: error })
   };
 
   return (
-    <GameContext.Provider value={{
-      state,
-      setCurrentScreen,
-      setCurrentZone,
-      setPlayer,
-      addPokemonToTeam,
-      setLoading,
-      setError,
-      setDialogue,
-      closeDialogue,
-      updateFlag,
-    }}>
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );
