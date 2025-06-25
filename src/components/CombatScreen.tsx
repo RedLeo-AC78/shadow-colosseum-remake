@@ -85,8 +85,18 @@ const CombatScreen = () => {
       setPlayerTeam(updatedTeam);
     }
     
+    // Créer une copie complète du Pokémon sélectionné avec toutes ses stats
+    const nextPokemon = {
+      ...selectedPokemon,
+      stats: {
+        ...selectedPokemon.stats
+      },
+      moves: selectedPokemon.moves.map(move => ({ ...move }))
+    };
+    
+    console.log(`Changement vers ${nextPokemon.name} avec ${nextPokemon.stats.hp} PV`);
+    
     // Changer de Pokémon
-    const nextPokemon = { ...selectedPokemon };
     setPlayerPokemon(nextPokemon);
     setPlayerCurrentIndex(pokemonIndex);
     setBattleLog(prev => [...prev, `Vous envoyez ${nextPokemon.name} !`]);
