@@ -50,7 +50,7 @@ export interface GameFlags {
 }
 
 export interface GameState {
-  currentScreen: 'menu' | 'character-creation' | 'cinematic' | 'exploration' | 'combat';
+  currentScreen: 'menu' | 'character-creation' | 'cinematic' | 'exploration' | 'combat' | 'end';
   currentZone: Zone;
   player: Player | null;
   dialogue: DialogueState;
