@@ -1,11 +1,9 @@
 
-"use client"
-
 import React, { useState, useEffect } from 'react';
-import { useGame } from '../contexts/GameContext';
+import { useGame } from '@/contexts/GameContext';
 import Player from './Player';
 import DialogueBox from './DialogueBox';
-import { useGridMovement } from '../hooks/useGridMovement';
+import { useGridMovement } from '@/hooks/useGridMovement';
 
 const ExplorationScreen = () => {
   const { state, setCurrentZone, setDialogue, setCurrentScreen, updateFlag } = useGame();
@@ -30,6 +28,7 @@ const ExplorationScreen = () => {
       speaker: 'Willie',
       text: 'Maintenant que nous nous connaissons, que dis-tu d\'un combat Pokémon ?',
       onComplete: () => {
+        // Démarrer le combat
         updateFlag('willieChallengeAvailable', false);
         setCurrentScreen('combat');
       }
@@ -47,9 +46,21 @@ const ExplorationScreen = () => {
         setCurrentZone('gas-station-interior');
         return;
       }
+      
+      const doorPositions = ['7,13', '7,14', '8,13', '8,14'];
+      const nearDoor = doorPositions.some(doorPos => {
+        const [doorRow, doorCol] = doorPos.split(',').map(Number);
+        const distance = Math.abs(playerPosition.row - doorRow) + Math.abs(playerPosition.col - doorCol);
+        return distance <= 1;
+      });
+      
+      if (nearDoor && !willieChallengePending) {
+        // Ne rien faire, juste pour éviter les interactions parasites
+      }
     }
   });
 
+  // Vérifier si Willie doit proposer le défi quand on arrive dans cette zone
   useEffect(() => {
     if (state.flags.willieChallengeAvailable && !willieChallengePending && !state.dialogue.isActive) {
       setWillieChallengePending(true);
@@ -87,6 +98,7 @@ const ExplorationScreen = () => {
             backgroundRepeat: 'no-repeat'
           }}
         >
+          {/* Grille de débogage */}
           {process.env.NODE_ENV === 'development' && (
             <div className="absolute inset-0 pointer-events-none">
               {Array.from({ length: MAP_ROWS + 1 }).map((_, row) => (
@@ -109,10 +121,12 @@ const ExplorationScreen = () => {
           <Player position={playerPosition} gridSize={GRID_SIZE} />
         </div>
         
+        {/* Informations de debug */}
         {process.env.NODE_ENV === 'development' && (
           <div className="absolute top-4 left-4 bg-black/80 text-white p-2 rounded text-xs">
             <p>Zone: Station service extérieur</p>
             <p>Position: Ligne {playerPosition.row}, Colonne {playerPosition.col}</p>
+            <p>Coordonnées pixel: {playerPosition.col * GRID_SIZE}, {playerPosition.row * GRID_SIZE}</p>
             <p>Willie rencontré: {state.flags.willieFirstMeeting ? 'Oui' : 'Non'}</p>
             <p>Défi disponible: {state.flags.willieChallengeAvailable ? 'Oui' : 'Non'}</p>
           </div>

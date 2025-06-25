@@ -1,40 +1,37 @@
-
-"use client"
-
 import React, { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { useGame } from '../contexts/GameContext';
-import { useAudio } from '../contexts/AudioContext';
+import { Button } from '@/components/ui/button';
+import { useGame } from '@/contexts/GameContext';
+import { useAudio } from '@/contexts/AudioContext';
 import { ChevronLeft, ChevronRight, Play, Pause, SkipForward, Volume2, VolumeX } from 'lucide-react';
 
 const cinematicImages = [
-  '/lovable-uploads/17e89d28-b912-4ab9-8d8f-3d09423cb3ec.png',
-  '/lovable-uploads/b00a260b-ee1c-49f3-86f1-b6930509807f.png',
-  '/lovable-uploads/8ffa368d-27d2-4c5b-9168-659ef0f5c73d.png',
-  '/lovable-uploads/09628e56-dbcc-4325-bb59-92dda1a279bb.png',
-  '/lovable-uploads/cf204bae-b277-42fb-8f84-4935497c57c1.png',
-  '/lovable-uploads/899af90a-c511-4a89-a5c3-5cb302e0e3b0.png',
-  '/lovable-uploads/5e2d6d4f-4f0c-460a-bd11-64048a9a6b73.png',
-  '/lovable-uploads/57a30905-6d8c-4e89-9a72-1deddd2cfa23.png',
-  '/lovable-uploads/ae818686-c115-4b47-b53b-64c7687165fa.png',
-  '/lovable-uploads/4752cfe9-9a9e-4dcb-aa64-31c2875c01cf.png',
-  '/lovable-uploads/895ea73b-fbb0-4439-b712-08ebb079e569.png',
-  '/lovable-uploads/841dcd74-f788-4278-857f-bb81ff5b5cfc.png',
-  '/lovable-uploads/2dc0d3fd-4470-4ba6-a1af-978ae3f14dac.png',
-  '/lovable-uploads/f68f52ba-474d-4cf6-ac1a-32c06bea46e4.png',
-  '/lovable-uploads/0fc7f8cb-65af-4c5e-a581-eaae09e596cb.png',
-  '/lovable-uploads/e3fe4bbd-8c14-4348-832b-a390ed42ce5a.png',
-  '/lovable-uploads/a123839b-0c51-4b33-b78c-999c68ea6f47.png',
-  '/lovable-uploads/8970f53b-a03c-4a9a-9c2b-f48e8c1ff2c3.png',
-  '/lovable-uploads/4bafecb4-1e2f-4704-b88b-ce649e89e1a0.png',
-  '/lovable-uploads/b6b86646-30b5-408d-83f1-11edd55bf33f.png',
-  '/lovable-uploads/ce5aa212-797b-4c3c-bd0d-36aa43b5140f.png',
-  '/lovable-uploads/dc9057fd-8417-49f9-ae88-83c852c65521.png',
-  '/lovable-uploads/e78aa8db-29a2-444f-88a2-becbdbc8496a.png',
-  '/lovable-uploads/ccf998e0-cf65-49d1-8742-9916acc7f30a.png',
-  '/lovable-uploads/9ec66c9d-35ea-406e-9ffe-27046277f542.png',
-  '/lovable-uploads/66557c3c-538d-4011-99f4-66ad58a80412.png',
-  '/lovable-uploads/3f473230-a1df-42b1-81fc-22ebecd23ee6.png',
+  '/lovable-uploads/17e89d28-b912-4ab9-8d8f-3d09423cb3ec.png', // Cinématique 1
+  '/lovable-uploads/b00a260b-ee1c-49f3-86f1-b6930509807f.png', // Cinématique 2
+  '/lovable-uploads/8ffa368d-27d2-4c5b-9168-659ef0f5c73d.png', // Cinématique 3
+  '/lovable-uploads/09628e56-dbcc-4325-bb59-92dda1a279bb.png', // Cinématique 4
+  '/lovable-uploads/cf204bae-b277-42fb-8f84-4935497c57c1.png', // Cinématique 5
+  '/lovable-uploads/899af90a-c511-4a89-a5c3-5cb302e0e3b0.png', // Cinématique 6
+  '/lovable-uploads/5e2d6d4f-4f0c-460a-bd11-64048a9a6b73.png', // Cinématique 7
+  '/lovable-uploads/57a30905-6d8c-4e89-9a72-1deddd2cfa23.png', // Cinématique 8
+  '/lovable-uploads/ae818686-c115-4b47-b53b-64c7687165fa.png', // Cinématique 9
+  '/lovable-uploads/4752cfe9-9a9e-4dcb-aa64-31c2875c01cf.png', // Cinématique 10
+  '/lovable-uploads/895ea73b-fbb0-4439-b712-08ebb079e569.png', // Cinématique 11
+  '/lovable-uploads/841dcd74-f788-4278-857f-bb81ff5b5cfc.png', // Cinématique 12
+  '/lovable-uploads/2dc0d3fd-4470-4ba6-a1af-978ae3f14dac.png', // Cinématique 13
+  '/lovable-uploads/f68f52ba-474d-4cf6-ac1a-32c06bea46e4.png', // Cinématique 14
+  '/lovable-uploads/0fc7f8cb-65af-4c5e-a581-eaae09e596cb.png', // Cinématique 15
+  '/lovable-uploads/e3fe4bbd-8c14-4348-832b-a390ed42ce5a.png', // Cinématique 16
+  '/lovable-uploads/a123839b-0c51-4b33-b78c-999c68ea6f47.png', // Cinématique 17
+  '/lovable-uploads/8970f53b-a03c-4a9a-9c2b-f48e8c1ff2c3.png', // Cinématique 18
+  '/lovable-uploads/4bafecb4-1e2f-4704-b88b-ce649e89e1a0.png', // Cinématique 19
+  '/lovable-uploads/b6b86646-30b5-408d-83f1-11edd55bf33f.png', // Cinématique 20
+  '/lovable-uploads/ce5aa212-797b-4c3c-bd0d-36aa43b5140f.png', // Cinématique 21
+  '/lovable-uploads/dc9057fd-8417-49f9-ae88-83c852c65521.png', // Cinématique 22
+  '/lovable-uploads/e78aa8db-29a2-444f-88a2-becbdbc8496a.png', // Cinématique 23
+  '/lovable-uploads/ccf998e0-cf65-49d1-8742-9916acc7f30a.png', // Cinématique 24
+  '/lovable-uploads/9ec66c9d-35ea-406e-9ffe-27046277f542.png', // Cinématique 25
+  '/lovable-uploads/66557c3c-538d-4011-99f4-66ad58a80412.png', // Cinématique 26
+  '/lovable-uploads/3f473230-a1df-42b1-81fc-22ebecd23ee6.png', // Cinématique 27
 ];
 
 const CinematicSlideshow = () => {
@@ -44,22 +41,27 @@ const CinematicSlideshow = () => {
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Durée totale : 64 secondes (1 minute et 4 secondes)
+  // 27 images : 64000ms / 27 ≈ 2370ms par image
   const SLIDE_DURATION = 2370;
-  const TOTAL_DURATION = 64000;
+  const TOTAL_DURATION = 64000; // 1 minute et 4 secondes en millisecondes
 
   useEffect(() => {
+    // Démarrer la musique d'intro
     playIntro();
 
+    // Timer pour passer automatiquement à l'exploration après 64 secondes
     const totalTimer = setTimeout(() => {
       setCurrentScreen('exploration');
     }, TOTAL_DURATION);
 
     return () => {
       clearTimeout(totalTimer);
-      stopAllMusic();
+      stopAllMusic(); // Arrêter toute musique en quittant la cinématique
     };
   }, [playIntro, stopAllMusic, setCurrentScreen]);
 
+  // Auto-play effect avec timing précis
   useEffect(() => {
     if (!isAutoPlay) return;
 
@@ -77,6 +79,7 @@ const CinematicSlideshow = () => {
     setTimeout(() => {
       setCurrentSlide((prev) => {
         if (prev >= cinematicImages.length - 1) {
+          // Fin de la cinématique, passer à l'exploration
           setCurrentScreen('exploration');
           return prev;
         }
@@ -96,6 +99,11 @@ const CinematicSlideshow = () => {
     }, 300);
   };
 
+  const goToSlide = (index: number) => {
+    if (isTransitioning) return;
+    setCurrentSlide(index);
+  };
+
   const skipCinematic = () => {
     stopAllMusic();
     setCurrentScreen('exploration');
@@ -107,6 +115,7 @@ const CinematicSlideshow = () => {
 
   return (
     <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
+      {/* Main Image Display */}
       <div className="flex-1 relative">
         <img
           src={cinematicImages[currentSlide]}
@@ -115,10 +124,14 @@ const CinematicSlideshow = () => {
             isTransitioning ? 'opacity-0' : 'opacity-100'
           }`}
         />
+        
+        {/* Overlay gradient for better text readability */}
         <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
+      {/* Controls */}
       <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-4">
+        {/* Progress Bar */}
         <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
           <div
             className="bg-yellow-500 h-2 rounded-full transition-all duration-300"
@@ -128,6 +141,7 @@ const CinematicSlideshow = () => {
           ></div>
         </div>
 
+        {/* Control Buttons */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Button
@@ -169,10 +183,12 @@ const CinematicSlideshow = () => {
             </Button>
           </div>
 
+          {/* Slide Counter */}
           <div className="text-white text-sm">
             {currentSlide + 1} / {cinematicImages.length}
           </div>
 
+          {/* Skip Button */}
           <Button
             onClick={skipCinematic}
             className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold"
@@ -182,11 +198,12 @@ const CinematicSlideshow = () => {
           </Button>
         </div>
 
+        {/* Slide Dots */}
         <div className="flex justify-center space-x-2 mt-4">
           {cinematicImages.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => goToSlide(index)}
               className={`w-2 h-2 rounded-full transition-all duration-200 ${
                 index === currentSlide
                   ? 'bg-yellow-500 scale-125'

@@ -17,6 +17,7 @@ const Player = ({ position, gridSize }: PlayerProps) => {
         height: gridSize,
       }}
     >
+      {/* Placeholder du joueur - Un cercle coloré centré dans la case */}
       <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg">
         <div className="w-full h-full bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
       </div>

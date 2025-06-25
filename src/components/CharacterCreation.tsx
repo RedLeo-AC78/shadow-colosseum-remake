@@ -1,20 +1,17 @@
-
-"use client"
-
 import React, { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { useGame } from '../contexts/GameContext';
-import { useAudio } from '../contexts/AudioContext';
-import { fetchPokemonList, fetchPokemon } from '../services/pokeapi';
-import { Pokemon } from '../types/game';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGame } from '@/contexts/GameContext';
+import { useAudio } from '@/contexts/AudioContext';
+import { fetchPokemonList, fetchPokemon } from '@/services/pokeapi';
+import { Pokemon } from '@/types/game';
 import PokemonSelector from './PokemonSelector';
 
 const CharacterCreation = () => {
-  const { setCurrentScreen, setPlayer } = useGame();
-  const { playMainTitle } = useAudio();
+  const { setCurrentScreen, setPlayer, state } = useGame();
+  const { playMainTitle } = useAudio(); // La musique continue du menu
   const [playerName, setPlayerName] = useState('');
   const [selectedPokemon, setSelectedPokemon] = useState<Pokemon[]>([]);
   const [pokemonList, setPokemonList] = useState<Array<{ id: number; name: string }>>([]);
@@ -22,13 +19,14 @@ const CharacterCreation = () => {
 
   useEffect(() => {
     loadPokemonList();
+    // S'assurer que la musique continue (au cas où)
     playMainTitle();
   }, [playMainTitle]);
 
   const loadPokemonList = async () => {
     try {
       setIsLoading(true);
-      const list = await fetchPokemonList(150);
+      const list = await fetchPokemonList(150); // Premier 150 Pokémon
       setPokemonList(list);
     } catch (error) {
       console.error('Error loading Pokemon list:', error);
@@ -52,7 +50,7 @@ const CharacterCreation = () => {
     if (playerName.trim() && selectedPokemon.length >= 1) {
       const player = {
         name: playerName.trim(),
-        team: selectedPokemon.filter(p => p),
+        team: selectedPokemon.filter(p => p), // Remove empty slots
         position: {
           x: 0,
           y: 0,
@@ -87,6 +85,7 @@ const CharacterCreation = () => {
         backgroundImage: 'url(/lovable-uploads/98fe95e3-f292-4ee1-a789-9eaa446f0a51.png)',
       }}
     >
+      {/* Overlay sombre pour améliorer la lisibilité */}
       <div className="absolute inset-0 bg-black/50"></div>
       
       <div className="max-w-4xl mx-auto relative z-10">
@@ -97,6 +96,7 @@ const CharacterCreation = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-8">
+            {/* Nom du joueur */}
             <div className="space-y-2">
               <Label htmlFor="player-name" className="text-white text-xl">
                 Nom du Dresseur :
@@ -111,6 +111,7 @@ const CharacterCreation = () => {
               />
             </div>
 
+            {/* Sélection des Pokémon */}
             <div className="space-y-4">
               <h3 className="text-white text-xl">Choisissez votre équipe (2 Pokémon max) :</h3>
               
@@ -132,6 +133,7 @@ const CharacterCreation = () => {
               </div>
             </div>
 
+            {/* Boutons */}
             <div className="flex justify-between pt-6">
               <Button
                 onClick={() => setCurrentScreen('menu')}
