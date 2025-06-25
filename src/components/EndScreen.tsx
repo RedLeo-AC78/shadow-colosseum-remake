@@ -1,11 +1,12 @@
 
+"use client"
+
 import React, { useEffect, useState } from 'react';
 
 const EndScreen = () => {
   const [showText, setShowText] = useState(false);
 
   useEffect(() => {
-    // Show text after 1 second
     const timer = setTimeout(() => {
       setShowText(true);
     }, 1000);

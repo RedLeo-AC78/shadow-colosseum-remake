@@ -1,8 +1,10 @@
 
+"use client"
+
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { useGame } from '@/contexts/GameContext';
-import { useAudio } from '@/contexts/AudioContext';
+import { Button } from './ui/button';
+import { useGame } from '../contexts/GameContext';
+import { useAudio } from '../contexts/AudioContext';
 import { Volume, VolumeX } from 'lucide-react';
 
 const MainMenu = () => {
@@ -10,12 +12,10 @@ const MainMenu = () => {
   const { playMainTitle, toggleMute, isMuted } = useAudio();
 
   useEffect(() => {
-    // Démarrer la musique du menu principal
     playMainTitle();
   }, [playMainTitle]);
 
   const handleStart = () => {
-    // Pas besoin d'arrêter la musique, elle continue pour la création de personnage
     setCurrentScreen('character-creation');
   };
 
@@ -26,10 +26,8 @@ const MainMenu = () => {
         backgroundImage: 'url(/lovable-uploads/98fe95e3-f292-4ee1-a789-9eaa446f0a51.png)',
       }}
     >
-      {/* Overlay sombre pour améliorer la lisibilité */}
       <div className="absolute inset-0 bg-black/40"></div>
 
-      {/* Sound Toggle Button */}
       <button
         onClick={toggleMute}
         className="absolute top-8 right-8 z-20 p-3 bg-black/30 rounded-full hover:bg-black/50 transition-all duration-200"
@@ -41,7 +39,6 @@ const MainMenu = () => {
         )}
       </button>
 
-      {/* Game Title */}
       <div className="text-center z-10 mb-16">
         <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-2xl">
           POKEMON
@@ -52,7 +49,6 @@ const MainMenu = () => {
         <p className="text-xl text-gray-300 drop-shadow-lg">REMAKE</p>
       </div>
 
-      {/* Press Start Button with smooth animation */}
       <div className="z-10">
         <Button
           onClick={handleStart}
@@ -62,7 +58,6 @@ const MainMenu = () => {
         </Button>
       </div>
 
-      {/* Footer */}
       <div className="absolute bottom-8 text-center z-10">
         <p className="text-gray-400 text-sm">© 2024 - École de Dev Project</p>
       </div>

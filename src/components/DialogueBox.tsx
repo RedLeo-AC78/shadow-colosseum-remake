@@ -1,6 +1,8 @@
 
+"use client"
+
 import React, { useEffect } from 'react';
-import { useGame } from '@/contexts/GameContext';
+import { useGame } from '../contexts/GameContext';
 
 const DialogueBox = () => {
   const { state, closeDialogue } = useGame();

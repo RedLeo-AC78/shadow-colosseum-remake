@@ -1,9 +1,11 @@
 
+"use client"
+
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Pokemon } from '@/types/game';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Pokemon } from '../types/game';
 
 interface PokemonSelectorProps {
   slot: number;

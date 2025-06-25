@@ -1,10 +1,12 @@
 
+"use client"
+
 import React, { useState, useEffect } from 'react';
-import { useGame } from '@/contexts/GameContext';
+import { useGame } from '../contexts/GameContext';
 import Player from './Player';
 import Willie from './Willie';
 import DialogueBox from './DialogueBox';
-import { useGridMovement } from '@/hooks/useGridMovement';
+import { useGridMovement } from '../hooks/useGridMovement';
 
 const GasStationInterior = () => {
   const { state, setCurrentZone, setDialogue, updateFlag } = useGame();
@@ -16,13 +18,12 @@ const GasStationInterior = () => {
   const WILLIE_POSITION = { row: 12, col: 16 };
 
   const blockedTiles = new Set([
-    '5,8', '5,9', '5,10', '5,11', // Comptoir du haut
-    '12,16', // Position de Willie
+    '5,8', '5,9', '5,10', '5,11',
+    '12,16',
   ]);
 
   const handleWillieInteraction = () => {
     if (!state.flags.willieFirstMeeting) {
-      // Première rencontre avec Willie
       setDialogue({
         isActive: true,
         speaker: 'Willie',
@@ -41,13 +42,11 @@ const GasStationInterior = () => {
     gridBounds: { rows: MAP_ROWS, cols: MAP_COLS },
     blockedTiles,
     onInteraction: () => {
-      // Vérifier si le joueur est à la position de sortie
       if (playerPosition.row === 15 && playerPosition.col === 4) {
         setCurrentZone('gas-station-exterior');
         return;
       }
       
-      // Vérifier si le joueur est près de Willie
       const willieDistance = Math.abs(playerPosition.row - WILLIE_POSITION.row) + 
                             Math.abs(playerPosition.col - WILLIE_POSITION.col);
       
@@ -58,13 +57,12 @@ const GasStationInterior = () => {
   });
 
   useEffect(() => {
-    if (state.dialogue.isActive) return; // Ne pas écouter les touches pendant un dialogue
+    if (state.dialogue.isActive) return;
     
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress, state.dialogue.isActive]);
 
-  // Vérifier automatiquement si le joueur est à la position de sortie
   useEffect(() => {
     if (playerPosition.row === 15 && playerPosition.col === 4) {
       setCurrentZone('gas-station-exterior');
@@ -85,7 +83,6 @@ const GasStationInterior = () => {
             backgroundRepeat: 'no-repeat'
           }}
         >
-          {/* Grille de débogage */}
           {process.env.NODE_ENV === 'development' && (
             <div className="absolute inset-0 pointer-events-none">
               {Array.from({ length: MAP_ROWS + 1 }).map((_, row) => (
@@ -105,26 +102,20 @@ const GasStationInterior = () => {
             </div>
           )}
 
-          {/* Willie NPC */}
           <Willie position={WILLIE_POSITION} gridSize={GRID_SIZE} />
-
-          {/* Joueur */}
           <Player position={playerPosition} gridSize={GRID_SIZE} />
         </div>
         
-        {/* Informations de debug */}
         {process.env.NODE_ENV === 'development' && (
           <div className="absolute top-4 left-4 bg-black/80 text-white p-2 rounded text-xs">
             <p>Zone: Station service intérieur</p>
             <p>Position: Ligne {playerPosition.row}, Colonne {playerPosition.col}</p>
-            <p>Coordonnées pixel: {playerPosition.col * GRID_SIZE}, {playerPosition.row * GRID_SIZE}</p>
             <p>Willie rencontré: {state.flags.willieFirstMeeting ? 'Oui' : 'Non'}</p>
             <p>Défi disponible: {state.flags.willieChallengeAvailable ? 'Oui' : 'Non'}</p>
           </div>
         )}
       </div>
 
-      {/* Boîte de dialogue */}
       <DialogueBox />
     </>
   );
