@@ -8,12 +8,14 @@ import { Button } from '@/components/ui/button';
 const CombatScreen = () => {
   const { state, setCurrentScreen, setDialogue, updateFlag } = useGame();
   const [playerPokemon, setPlayerPokemon] = useState<Pokemon | null>(null);
+  const [playerCurrentIndex, setPlayerCurrentIndex] = useState(0);
   const [opponentPokemon, setOpponentPokemon] = useState<Pokemon | null>(null);
   const [opponentTeam, setOpponentTeam] = useState<Pokemon[]>([]);
   const [opponentCurrentIndex, setOpponentCurrentIndex] = useState(0);
   const [battleLog, setBattleLog] = useState<string[]>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [combatOver, setCombatOver] = useState(false);
+  const [showPokemonSelection, setShowPokemonSelection] = useState(false);
 
   useEffect(() => {
     // Initialiser le combat
@@ -58,6 +60,17 @@ const CombatScreen = () => {
       return true;
     }
     return false;
+  };
+
+  const switchPlayerPokemon = (pokemonIndex: number) => {
+    if (!state.player || pokemonIndex >= state.player.team.length) return false;
+    
+    const nextPokemon = { ...state.player.team[pokemonIndex] };
+    setPlayerPokemon(nextPokemon);
+    setPlayerCurrentIndex(pokemonIndex);
+    setBattleLog(prev => [...prev, `Vous envoyez ${nextPokemon.name} !`]);
+    setShowPokemonSelection(false);
+    return true;
   };
 
   const useMove = (move: PokemonMove) => {
@@ -118,7 +131,21 @@ const CombatScreen = () => {
     
     if (newPlayerHp === 0) {
       setBattleLog(prev => [...prev, `${playerPokemon.name} est K.O. !`]);
-      endCombat(false);
+      
+      // Vérifier s'il y a d'autres Pokémon dans l'équipe du joueur
+      const availablePokemon = state.player?.team.filter((_, index) => 
+        index !== playerCurrentIndex && _.stats.hp > 0
+      ) || [];
+      
+      if (availablePokemon.length > 0) {
+        // Le joueur a d'autres Pokémon disponibles
+        setBattleLog(prev => [...prev, 'Choisissez votre prochain Pokémon !']);
+        setShowPokemonSelection(true);
+        setIsPlayerTurn(true);
+      } else {
+        // Le joueur n'a plus de Pokémon, il perd
+        endCombat(false);
+      }
       return;
     }
     
@@ -214,7 +241,24 @@ const CombatScreen = () => {
 
         {/* Actions */}
         <div className="w-1/2">
-          {isPlayerTurn && !combatOver && (
+          {showPokemonSelection && (
+            <div className="grid grid-cols-1 gap-2">
+              <h4 className="text-lg font-bold mb-2">Choisissez un Pokémon :</h4>
+              {state.player?.team.map((pokemon, index) => {
+                if (index === playerCurrentIndex || pokemon.stats.hp === 0) return null;
+                return (
+                  <Button
+                    key={index}
+                    onClick={() => switchPlayerPokemon(index)}
+                    className="p-2 text-sm"
+                  >
+                    {pokemon.name} (PV: {pokemon.stats.hp}/{pokemon.stats.maxHp})
+                  </Button>
+                );
+              })}
+            </div>
+          )}
+          {isPlayerTurn && !combatOver && !showPokemonSelection && (
             <div className="grid grid-cols-2 gap-2">
               {playerPokemon.moves.map((move, index) => (
                 <Button
@@ -230,7 +274,7 @@ const CombatScreen = () => {
               ))}
             </div>
           )}
-          {!isPlayerTurn && !combatOver && (
+          {!isPlayerTurn && !combatOver && !showPokemonSelection && (
             <div className="text-center text-gray-600">
               Tour de l'adversaire...
             </div>
