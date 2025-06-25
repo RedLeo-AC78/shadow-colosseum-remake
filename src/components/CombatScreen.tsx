@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { Pokemon, PokemonMove } from '@/types/game';
@@ -70,6 +69,15 @@ const CombatScreen = () => {
     setPlayerCurrentIndex(pokemonIndex);
     setBattleLog(prev => [...prev, `Vous envoyez ${nextPokemon.name} !`]);
     setShowPokemonSelection(false);
+    setIsPlayerTurn(false);
+    
+    // Reprendre le combat après le changement de Pokémon
+    setTimeout(() => {
+      if (opponentPokemon) {
+        opponentTurn(opponentPokemon);
+      }
+    }, 1500);
+    
     return true;
   };
 
@@ -95,14 +103,16 @@ const CombatScreen = () => {
         const hasNextPokemon = switchOpponentPokemon();
         if (!hasNextPokemon) {
           // Willie n'a plus de Pokémon, le joueur gagne
-          endCombat(true);
+          setTimeout(() => {
+            endCombat(true);
+          }, 1000);
         } else {
           // Continuer le combat avec le nouveau Pokémon
           setIsPlayerTurn(false);
           setTimeout(() => {
-            const currentOpponent = opponentTeam[opponentCurrentIndex + 1];
-            if (currentOpponent) {
-              opponentTurn({ ...currentOpponent });
+            const nextOpponentIndex = opponentCurrentIndex + 1;
+            if (nextOpponentIndex < opponentTeam.length) {
+              opponentTurn(opponentTeam[nextOpponentIndex]);
             }
           }, 1500);
         }
@@ -144,7 +154,9 @@ const CombatScreen = () => {
         setIsPlayerTurn(true);
       } else {
         // Le joueur n'a plus de Pokémon, il perd
-        endCombat(false);
+        setTimeout(() => {
+          endCombat(false);
+        }, 1000);
       }
       return;
     }
@@ -153,21 +165,33 @@ const CombatScreen = () => {
   };
 
   const endCombat = (playerWon: boolean) => {
+    console.log('Combat terminé, joueur a gagné:', playerWon);
     setCombatOver(true);
+    setIsPlayerTurn(false);
+    
     const resultMessage = playerWon ? 'Vous avez gagné !' : 'Vous avez perdu...';
     setBattleLog(prev => [...prev, resultMessage]);
     
     setTimeout(() => {
+      const dialogueText = playerWon 
+        ? 'Bravo ! Tu es vraiment doué ! Tu as un talent naturel pour les combats Pokémon !' 
+        : 'Ne t\'inquiète pas, tu feras mieux la prochaine fois ! L\'entraînement est la clé du succès !';
+      
+      console.log('Déclenchement du dialogue de Willie');
       setDialogue({
         isActive: true,
         speaker: 'Willie',
-        text: playerWon ? 'Bravo ! Tu es vraiment doué !' : 'Ne t\'inquiète pas, tu feras mieux la prochaine fois !',
+        text: dialogueText,
         onComplete: () => {
-          // Fondu au noir et fin du jeu
+          console.log('Dialogue terminé, déclenchement de la fin');
+          // Marquer le jeu comme terminé
           updateFlag('gameCompleted', true);
+          
+          // Fondu au noir et fin du jeu après un délai
           setTimeout(() => {
-            setCurrentScreen('exploration'); // Retour à l'exploration
-          }, 1000);
+            console.log('Retour à l\'exploration');
+            setCurrentScreen('exploration');
+          }, 3000);
         }
       });
     }, 2000);
@@ -279,12 +303,17 @@ const CombatScreen = () => {
               Tour de l'adversaire...
             </div>
           )}
+          {combatOver && (
+            <div className="text-center text-lg font-bold">
+              Combat terminé !
+            </div>
+          )}
         </div>
       </div>
       
       {/* Fin de jeu */}
       {state.flags.gameCompleted && (
-        <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black flex items-center justify-center z-50 transition-opacity duration-1000">
           <div className="text-white text-4xl text-center">
             <div className="mb-4">À suivre...</div>
             <div className="text-2xl">Merci d'avoir joué !</div>
