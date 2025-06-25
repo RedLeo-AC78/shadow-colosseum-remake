@@ -15,12 +15,18 @@ const CombatScreen = () => {
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [combatOver, setCombatOver] = useState(false);
   const [showPokemonSelection, setShowPokemonSelection] = useState(false);
+  // État local pour gérer l'équipe du joueur pendant le combat
+  const [playerTeam, setPlayerTeam] = useState<Pokemon[]>([]);
 
   useEffect(() => {
     // Initialiser le combat
     const initCombat = async () => {
       if (state.player && state.player.team.length > 0) {
-        const playerFirstPokemon = { ...state.player.team[0] };
+        // Copier l'équipe du joueur pour éviter les mutations directes
+        const teamCopy = state.player.team.map(pokemon => ({ ...pokemon }));
+        setPlayerTeam(teamCopy);
+        
+        const playerFirstPokemon = { ...teamCopy[0] };
         setPlayerPokemon(playerFirstPokemon);
         
         const willieTeam = await createWillieTeam();
@@ -44,7 +50,7 @@ const CombatScreen = () => {
     const power = move.power;
     
     const baseDamage = ((((2 * level / 5 + 2) * power * attack / defense) / 50) + 2);
-    const randomFactor = 0.85 + Math.random() * 0.15; // Entre 85% et 100%
+    const randomFactor = 0.85 + Math.random() * 0.15;
     
     return Math.max(1, Math.floor(baseDamage * randomFactor));
   };
@@ -62,16 +68,34 @@ const CombatScreen = () => {
   };
 
   const switchPlayerPokemon = (pokemonIndex: number) => {
-    if (!state.player || pokemonIndex >= state.player.team.length) return false;
+    if (pokemonIndex >= playerTeam.length) return false;
     
-    const nextPokemon = { ...state.player.team[pokemonIndex] };
+    const selectedPokemon = playerTeam[pokemonIndex];
+    
+    // Vérifier que le Pokémon n'est pas K.O.
+    if (selectedPokemon.stats.hp <= 0) {
+      console.log('Pokémon K.O. sélectionné, impossible de l\'utiliser');
+      return false;
+    }
+    
+    // Mettre à jour l'état du Pokémon actuel dans l'équipe avant de changer
+    if (playerPokemon) {
+      const updatedTeam = [...playerTeam];
+      updatedTeam[playerCurrentIndex] = { ...playerPokemon };
+      setPlayerTeam(updatedTeam);
+    }
+    
+    // Changer de Pokémon
+    const nextPokemon = { ...selectedPokemon };
     setPlayerPokemon(nextPokemon);
     setPlayerCurrentIndex(pokemonIndex);
     setBattleLog(prev => [...prev, `Vous envoyez ${nextPokemon.name} !`]);
     setShowPokemonSelection(false);
+    
+    // Le tour du joueur se termine après le changement
     setIsPlayerTurn(false);
     
-    // Reprendre le combat après le changement de Pokémon
+    // L'adversaire attaque après le changement
     setTimeout(() => {
       if (opponentPokemon) {
         opponentTurn(opponentPokemon);
@@ -79,6 +103,13 @@ const CombatScreen = () => {
     }, 1500);
     
     return true;
+  };
+
+  const updatePlayerPokemonInTeam = (updatedPokemon: Pokemon) => {
+    const updatedTeam = [...playerTeam];
+    updatedTeam[playerCurrentIndex] = { ...updatedPokemon };
+    setPlayerTeam(updatedTeam);
+    setPlayerPokemon(updatedPokemon);
   };
 
   const useMove = (move: PokemonMove) => {
@@ -98,16 +129,13 @@ const CombatScreen = () => {
     if (newOpponentHp === 0) {
       setBattleLog(prev => [...prev, `${opponentPokemon.name} est K.O. !`]);
       
-      // Vérifier s'il y a un autre Pokémon dans l'équipe adverse
       setTimeout(() => {
         const hasNextPokemon = switchOpponentPokemon();
         if (!hasNextPokemon) {
-          // Willie n'a plus de Pokémon, le joueur gagne
           setTimeout(() => {
             endCombat(true);
           }, 1000);
         } else {
-          // Continuer le combat avec le nouveau Pokémon
           setIsPlayerTurn(false);
           setTimeout(() => {
             const nextOpponentIndex = opponentCurrentIndex + 1;
@@ -136,24 +164,23 @@ const CombatScreen = () => {
       stats: { ...playerPokemon.stats, hp: newPlayerHp }
     };
     
-    setPlayerPokemon(updatedPlayer);
+    // Mettre à jour le Pokémon du joueur et l'équipe
+    updatePlayerPokemonInTeam(updatedPlayer);
     setBattleLog(prev => [...prev, `${currentOpponent.name} utilise ${randomMove.name} !`, `${playerPokemon.name} perd ${damage} PV !`]);
     
     if (newPlayerHp === 0) {
       setBattleLog(prev => [...prev, `${playerPokemon.name} est K.O. !`]);
       
-      // Vérifier s'il y a d'autres Pokémon dans l'équipe du joueur
-      const availablePokemon = state.player?.team.filter((_, index) => 
-        index !== playerCurrentIndex && _.stats.hp > 0
-      ) || [];
+      // Vérifier s'il y a d'autres Pokémon disponibles
+      const availablePokemon = playerTeam.filter((pokemon, index) => 
+        index !== playerCurrentIndex && pokemon.stats.hp > 0
+      );
       
       if (availablePokemon.length > 0) {
-        // Le joueur a d'autres Pokémon disponibles
         setBattleLog(prev => [...prev, 'Choisissez votre prochain Pokémon !']);
         setShowPokemonSelection(true);
         setIsPlayerTurn(true);
       } else {
-        // Le joueur n'a plus de Pokémon, il perd
         setTimeout(() => {
           endCombat(false);
         }, 1000);
@@ -190,10 +217,8 @@ const CombatScreen = () => {
           text: dialogueText,
           onComplete: () => {
             console.log('Dialogue terminé, déclenchement de la fin');
-            // Marquer le jeu comme terminé
             updateFlag('gameCompleted', true);
             
-            // Fondu au noir et fin du jeu après un délai
             setTimeout(() => {
               console.log('Retour à l\'exploration');
               setCurrentScreen('exploration');
@@ -233,7 +258,6 @@ const CombatScreen = () => {
               ></div>
             </div>
           </div>
-          {/* Afficher les Pokémon restants */}
           <div className="mt-2 text-sm">
             Pokémon restants: {opponentTeam.length - opponentCurrentIndex}
           </div>
@@ -261,9 +285,9 @@ const CombatScreen = () => {
 
       {/* Interface de combat */}
       <div className="h-1/3 bg-white rounded-lg p-4 flex">
-        {/* Log de combat */}
+        {/* Log de combat - maintenant scrollable */}
         <div className="flex-1 mr-4">
-          <div className="h-full overflow-y-auto text-sm">
+          <div className="h-full overflow-y-auto text-sm max-h-32 border rounded p-2">
             {battleLog.map((message, index) => (
               <div key={index} className="mb-1">{message}</div>
             ))}
@@ -275,7 +299,8 @@ const CombatScreen = () => {
           {showPokemonSelection && (
             <div className="grid grid-cols-1 gap-2">
               <h4 className="text-lg font-bold mb-2">Choisissez un Pokémon :</h4>
-              {state.player?.team.map((pokemon, index) => {
+              {playerTeam.map((pokemon, index) => {
+                // Ne montrer que les Pokémon vivants et différents du Pokémon actuel
                 if (index === playerCurrentIndex || pokemon.stats.hp === 0) return null;
                 return (
                   <Button
