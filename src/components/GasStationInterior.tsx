@@ -41,10 +41,8 @@ const GasStationInterior = () => {
     gridBounds: { rows: MAP_ROWS, cols: MAP_COLS },
     blockedTiles,
     onInteraction: () => {
-      // Vérifier si le joueur est près de la sortie
-      if (playerPosition.row >= 14 && 
-          playerPosition.col >= 2 && 
-          playerPosition.col <= 5) {
+      // Vérifier si le joueur est à la position de sortie
+      if (playerPosition.row === 15 && playerPosition.col === 4) {
         setCurrentZone('gas-station-exterior');
         return;
       }
@@ -65,6 +63,13 @@ const GasStationInterior = () => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [handleKeyPress, state.dialogue.isActive]);
+
+  // Vérifier automatiquement si le joueur est à la position de sortie
+  useEffect(() => {
+    if (playerPosition.row === 15 && playerPosition.col === 4) {
+      setCurrentZone('gas-station-exterior');
+    }
+  }, [playerPosition, setCurrentZone]);
 
   return (
     <>
