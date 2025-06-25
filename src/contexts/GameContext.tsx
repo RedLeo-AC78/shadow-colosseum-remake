@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { GameState, Player, Pokemon, Zone } from '@/types/game';
+import { GameState, Player, Pokemon, Zone, DialogueState, GameFlags } from '@/types/game';
 
 interface GameContextType {
   state: GameState;
@@ -10,6 +10,9 @@ interface GameContextType {
   addPokemonToTeam: (pokemon: Pokemon) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setDialogue: (dialogue: DialogueState) => void;
+  closeDialogue: () => void;
+  updateFlag: (flag: keyof GameFlags, value: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -20,12 +23,25 @@ type GameAction =
   | { type: 'SET_PLAYER'; payload: Player }
   | { type: 'ADD_POKEMON_TO_TEAM'; payload: Pokemon }
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string | null };
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'SET_DIALOGUE'; payload: DialogueState }
+  | { type: 'CLOSE_DIALOGUE' }
+  | { type: 'UPDATE_FLAG'; payload: { flag: keyof GameFlags; value: boolean } };
 
 const initialState: GameState = {
   currentScreen: 'menu',
   currentZone: 'gas-station-exterior',
   player: null,
+  dialogue: {
+    isActive: false,
+    speaker: '',
+    text: ''
+  },
+  flags: {
+    willieFirstMeeting: false,
+    willieChallengeAvailable: false,
+    gameCompleted: false
+  },
   isLoading: false,
   error: null,
 };
@@ -52,6 +68,21 @@ function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, isLoading: action.payload };
     case 'SET_ERROR':
       return { ...state, error: action.payload };
+    case 'SET_DIALOGUE':
+      return { ...state, dialogue: action.payload };
+    case 'CLOSE_DIALOGUE':
+      return { 
+        ...state, 
+        dialogue: { ...state.dialogue, isActive: false }
+      };
+    case 'UPDATE_FLAG':
+      return {
+        ...state,
+        flags: {
+          ...state.flags,
+          [action.payload.flag]: action.payload.value
+        }
+      };
     default:
       return state;
   }
@@ -84,6 +115,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_ERROR', payload: error });
   };
 
+  const setDialogue = (dialogue: DialogueState) => {
+    dispatch({ type: 'SET_DIALOGUE', payload: dialogue });
+  };
+
+  const closeDialogue = () => {
+    dispatch({ type: 'CLOSE_DIALOGUE' });
+  };
+
+  const updateFlag = (flag: keyof GameFlags, value: boolean) => {
+    dispatch({ type: 'UPDATE_FLAG', payload: { flag, value } });
+  };
+
   return (
     <GameContext.Provider value={{
       state,
@@ -93,6 +136,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       addPokemonToTeam,
       setLoading,
       setError,
+      setDialogue,
+      closeDialogue,
+      updateFlag,
     }}>
       {children}
     </GameContext.Provider>

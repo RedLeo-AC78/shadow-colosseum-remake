@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { AudioProvider } from '@/contexts/AudioContext';
@@ -7,6 +6,7 @@ import CharacterCreation from './CharacterCreation';
 import CinematicSlideshow from './CinematicSlideshow';
 import ExplorationScreen from './ExplorationScreen';
 import GasStationInterior from './GasStationInterior';
+import CombatScreen from './CombatScreen';
 
 const GameScreen = () => {
   const { state } = useGame();
@@ -20,17 +20,12 @@ const GameScreen = () => {
       case 'cinematic':
         return <CinematicSlideshow />;
       case 'exploration':
-        // Gérer les différentes zones dans l'exploration
         if (state.currentZone === 'gas-station-interior') {
           return <GasStationInterior />;
         }
         return <ExplorationScreen />;
       case 'combat':
-        return (
-          <div className="min-h-screen bg-red-800 flex items-center justify-center">
-            <div className="text-white text-2xl">Combat à venir...</div>
-          </div>
-        );
+        return <CombatScreen />;
       default:
         return <MainMenu />;
     }
