@@ -10,6 +10,7 @@ const CombatScreen = () => {
   const [playerPokemon, setPlayerPokemon] = useState<Pokemon | null>(null);
   const [opponentPokemon, setOpponentPokemon] = useState<Pokemon | null>(null);
   const [opponentTeam, setOpponentTeam] = useState<Pokemon[]>([]);
+  const [opponentCurrentIndex, setOpponentCurrentIndex] = useState(0);
   const [battleLog, setBattleLog] = useState<string[]>([]);
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [combatOver, setCombatOver] = useState(false);
@@ -47,6 +48,18 @@ const CombatScreen = () => {
     return Math.max(1, Math.floor(baseDamage * randomFactor));
   };
 
+  const switchOpponentPokemon = () => {
+    const nextIndex = opponentCurrentIndex + 1;
+    if (nextIndex < opponentTeam.length) {
+      setOpponentCurrentIndex(nextIndex);
+      const nextPokemon = { ...opponentTeam[nextIndex] };
+      setOpponentPokemon(nextPokemon);
+      setBattleLog(prev => [...prev, `Willie envoie ${nextPokemon.name} !`]);
+      return true;
+    }
+    return false;
+  };
+
   const useMove = (move: PokemonMove) => {
     if (!playerPokemon || !opponentPokemon || !isPlayerTurn || combatOver) return;
     
@@ -63,7 +76,24 @@ const CombatScreen = () => {
     
     if (newOpponentHp === 0) {
       setBattleLog(prev => [...prev, `${opponentPokemon.name} est K.O. !`]);
-      endCombat(true);
+      
+      // Vérifier s'il y a un autre Pokémon dans l'équipe adverse
+      setTimeout(() => {
+        const hasNextPokemon = switchOpponentPokemon();
+        if (!hasNextPokemon) {
+          // Willie n'a plus de Pokémon, le joueur gagne
+          endCombat(true);
+        } else {
+          // Continuer le combat avec le nouveau Pokémon
+          setIsPlayerTurn(false);
+          setTimeout(() => {
+            const currentOpponent = opponentTeam[opponentCurrentIndex + 1];
+            if (currentOpponent) {
+              opponentTurn({ ...currentOpponent });
+            }
+          }, 1500);
+        }
+      }, 1000);
       return;
     }
     
@@ -109,7 +139,7 @@ const CombatScreen = () => {
           // Fondu au noir et fin du jeu
           updateFlag('gameCompleted', true);
           setTimeout(() => {
-            setCurrentScreen('menu'); // Retour au menu pour l'instant
+            setCurrentScreen('exploration'); // Retour à l'exploration
           }, 1000);
         }
       });
@@ -144,6 +174,10 @@ const CombatScreen = () => {
                 style={{ width: `${(opponentPokemon.stats.hp / opponentPokemon.stats.maxHp) * 100}%` }}
               ></div>
             </div>
+          </div>
+          {/* Afficher les Pokémon restants */}
+          <div className="mt-2 text-sm">
+            Pokémon restants: {opponentTeam.length - opponentCurrentIndex}
           </div>
         </div>
 
