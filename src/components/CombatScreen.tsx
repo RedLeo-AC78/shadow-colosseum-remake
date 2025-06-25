@@ -172,28 +172,35 @@ const CombatScreen = () => {
     const resultMessage = playerWon ? 'Vous avez gagné !' : 'Vous avez perdu...';
     setBattleLog(prev => [...prev, resultMessage]);
     
+    // Quitter automatiquement le combat après un court délai
     setTimeout(() => {
-      const dialogueText = playerWon 
-        ? 'Bravo ! Tu es vraiment doué ! Tu as un talent naturel pour les combats Pokémon !' 
-        : 'Ne t\'inquiète pas, tu feras mieux la prochaine fois ! L\'entraînement est la clé du succès !';
+      console.log('Sortie automatique du combat');
+      setCurrentScreen('exploration');
       
-      console.log('Déclenchement du dialogue de Willie');
-      setDialogue({
-        isActive: true,
-        speaker: 'Willie',
-        text: dialogueText,
-        onComplete: () => {
-          console.log('Dialogue terminé, déclenchement de la fin');
-          // Marquer le jeu comme terminé
-          updateFlag('gameCompleted', true);
-          
-          // Fondu au noir et fin du jeu après un délai
-          setTimeout(() => {
-            console.log('Retour à l\'exploration');
-            setCurrentScreen('exploration');
-          }, 3000);
-        }
-      });
+      // Déclencher le dialogue de Willie après être retourné en exploration
+      setTimeout(() => {
+        const dialogueText = playerWon 
+          ? 'Bravo ! Tu es vraiment doué ! Tu as un talent naturel pour les combats Pokémon !' 
+          : 'Ne t\'inquiète pas, tu feras mieux la prochaine fois ! L\'entraînement est la clé du succès !';
+        
+        console.log('Déclenchement du dialogue de Willie');
+        setDialogue({
+          isActive: true,
+          speaker: 'Willie',
+          text: dialogueText,
+          onComplete: () => {
+            console.log('Dialogue terminé, déclenchement de la fin');
+            // Marquer le jeu comme terminé
+            updateFlag('gameCompleted', true);
+            
+            // Fondu au noir et fin du jeu après un délai
+            setTimeout(() => {
+              console.log('Retour à l\'exploration');
+              setCurrentScreen('exploration');
+            }, 3000);
+          }
+        });
+      }, 1000);
     }, 2000);
   };
 
@@ -310,16 +317,6 @@ const CombatScreen = () => {
           )}
         </div>
       </div>
-      
-      {/* Fin de jeu */}
-      {state.flags.gameCompleted && (
-        <div className="fixed inset-0 bg-black flex items-center justify-center z-50 transition-opacity duration-1000">
-          <div className="text-white text-4xl text-center">
-            <div className="mb-4">À suivre...</div>
-            <div className="text-2xl">Merci d'avoir joué !</div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
