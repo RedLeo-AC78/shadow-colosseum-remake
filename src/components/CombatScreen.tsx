@@ -231,13 +231,14 @@ const CombatScreen = () => {
           speaker: 'Willie',
           text: dialogueText,
           onComplete: () => {
-            console.log('Dialogue terminé, déclenchement de la fin');
+            console.log('Dialogue terminé, transition vers la fin');
             updateFlag('gameCompleted', true);
             
+            // Transition vers l'écran de fin après le dialogue
             setTimeout(() => {
-              console.log('Retour à l\'exploration');
-              setCurrentScreen('exploration');
-            }, 3000);
+              console.log('Transition vers l\'écran de fin');
+              setCurrentScreen('end');
+            }, 1000);
           }
         });
       }, 1000);

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useGame } from '@/contexts/GameContext';
 import { AudioProvider } from '@/contexts/AudioContext';
@@ -7,6 +8,7 @@ import CinematicSlideshow from './CinematicSlideshow';
 import ExplorationScreen from './ExplorationScreen';
 import GasStationInterior from './GasStationInterior';
 import CombatScreen from './CombatScreen';
+import EndScreen from './EndScreen';
 
 const GameScreen = () => {
   const { state } = useGame();
@@ -26,6 +28,8 @@ const GameScreen = () => {
         return <ExplorationScreen />;
       case 'combat':
         return <CombatScreen />;
+      case 'end':
+        return <EndScreen />;
       default:
         return <MainMenu />;
     }
